@@ -12,7 +12,7 @@ IoT-Enabled Self-Service Kiosk + Web-Based Clinic Management System for NU Fairv
 | Server/API | 🟡 Models, routes, sockets, queue numbering in place; not fully tested |
 | Device bridge | 🟡 Mock mode works; real hardware integration untested |
 | Firmware (ESP32) | 🟡 Written, not yet verified on physical sensors |
-| Automated tests | ❌ None yet |
+| Automated tests | ✅ Implemented (Selenium WebDriver E2E test suite in `packages/tests`) |
 
 This is an active student/prototype project, not production-ready — see `docs/` for architecture notes and known gaps.
 

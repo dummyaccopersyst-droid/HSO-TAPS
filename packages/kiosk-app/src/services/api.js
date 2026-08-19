@@ -1,8 +1,8 @@
 import axios from "axios";
 
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
-  headers: { "x-kiosk-key": import.meta.env.VITE_KIOSK_API_KEY },
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5001/api",
+  headers: { "x-kiosk-key": import.meta.env.VITE_KIOSK_API_KEY || "hsotap-kiosk-secret-key-2026" },
 });
 
 export const lookupStudent = (studentId) => api.get(`/students/lookup/${studentId}`).then((r) => r.data);

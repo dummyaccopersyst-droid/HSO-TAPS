@@ -3,9 +3,15 @@ import VitalsLog from "../models/VitalsLog.js";
 import ConsultationRecord from "../models/ConsultationRecord.js";
 import ExternalDocument from "../models/ExternalDocument.js";
 
-// GET /api/students/lookup/:studentId  (kiosk "Is this your profile?" screen)
+// GET /api/students/lookup/:studentId  (kiosk "Is this your profile?" screen by studentId or rfidTagUid)
 export async function lookupForKiosk(req, res) {
-  const student = await Student.findOne({ studentId: req.params.studentId, isActive: true });
+  const { studentId } = req.params;
+  const isObjectId = /^[0-9a-fA-F]{24}$/.test(studentId);
+  const query = isObjectId
+    ? { _id: studentId, isActive: true }
+    : { $or: [{ studentId }, { rfidTagUid: studentId.toUpperCase() }], isActive: true };
+
+  const student = await Student.findOne(query);
   if (!student) return res.status(404).json({ message: "Student not found" });
   res.json(student);
 }

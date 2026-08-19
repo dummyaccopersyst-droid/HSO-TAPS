@@ -6,7 +6,5 @@ import "./styles/theme.css";
 import "./offline.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
+  <App />
 );

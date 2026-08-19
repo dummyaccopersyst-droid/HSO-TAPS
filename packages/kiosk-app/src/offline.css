@@ -6,39 +6,63 @@
   justify-content: center;
   text-align: center;
   padding: 40px;
-  background: #fdeceb;
+  background: var(--nu-blue-light, #e8edf8);
 }
 
 .offline-icon {
   width: 84px;
   height: 84px;
   border-radius: 50%;
-  background: #fff;
-  color: var(--danger, #c0392b);
-  font-size: 2.4rem;
+  background: #ffffff;
+  color: var(--nu-blue, #0f3f96);
+  font-size: 2.2rem;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 24px;
-  box-shadow: 0 4px 18px rgba(192, 57, 43, 0.15);
+  box-shadow: 0 4px 18px rgba(15, 63, 150, 0.12);
+  border: 2px solid #d0dcf5;
 }
 
 .offline-screen h1 {
-  color: var(--danger, #c0392b);
+  color: var(--nu-blue-dark, #0a2a63);
   max-width: 600px;
-  font-size: 1.7rem;
+  font-size: 1.8rem;
+  font-weight: 700;
   margin: 0 0 12px;
 }
 
 .offline-screen p {
   color: var(--text-secondary, #5b6b85);
-  font-size: 1rem;
+  font-size: 1.05rem;
   max-width: 480px;
   margin: 0;
+  line-height: 1.5;
 }
 
 .offline-hint {
   color: var(--text-muted, #8b96a8) !important;
-  font-size: 0.85rem !important;
-  margin-top: 24px !important;
+  font-size: 0.9rem !important;
+  margin-top: 20px !important;
+}
+
+.btn-offline-retry {
+  background: var(--nu-blue, #0f3f96);
+  color: #ffffff;
+  font-size: 1.05rem;
+  font-weight: 700;
+  padding: 16px 36px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(15, 63, 150, 0.25);
+  transition: transform 0.1s ease, opacity 0.15s ease;
+}
+
+.btn-offline-retry:active {
+  transform: scale(0.98);
+}
+
+.btn-offline-retry:hover {
+  opacity: 0.94;
 }

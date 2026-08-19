@@ -12,10 +12,31 @@
 .result-icon-ok { background: #eaf7ef; color: var(--success); }
 .result-icon-alert { background: #fdeceb; color: var(--danger); }
 
-.result-title-alert { color: var(--danger); max-width: 640px; }
+.result-title-alert { color: var(--danger); max-width: 640px; margin-bottom: 12px; }
+
+.fever-alert-banner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background: #fff5f5;
+  border: 2px solid #fca5a5;
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 24px;
+  width: 100%;
+  max-width: 640px;
+}
+
+.fever-subtitle {
+  color: #991b1b;
+  font-size: 1.05rem;
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
 
 .result-queue-block {
-  margin: 0 0 28px;
+  margin: 0 0 20px;
   width: 100%;
   max-width: 300px;
 }
@@ -36,7 +57,12 @@
   padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
+}
+
+.reading-summary-stat.stat-fever {
+  border-color: #fca5a5;
+  background: #fffdfd;
 }
 
 .reading-summary-label {
@@ -51,6 +77,31 @@
   color: var(--nu-blue-dark);
   font-size: 1.3rem;
   font-weight: 800;
+}
+
+.reading-badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 12px;
+  margin-top: 2px;
+  width: fit-content;
+}
+
+.badge-fever {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.badge-normal {
+  background: #d1fae5;
+  color: #059669;
+}
+
+.badge-bmi {
+  background: #e0f2fe;
+  color: #0369a1;
 }
 
 .result-done-btn {

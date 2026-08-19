@@ -23,7 +23,9 @@ export async function submitIntake(req, res) {
   const io = req.app.get("io");
   const { studentId, serviceType, reason, requestDetails, temperatureC, heightCm, weightKg, source } = req.body;
 
-  const student = await Student.findOne({ studentId });
+  const student = await Student.findOne({
+    $or: [{ studentId }, { rfidTagUid: studentId?.toUpperCase() }],
+  });
   if (!student) return res.status(404).json({ message: "Unknown student" });
 
   let bmi;

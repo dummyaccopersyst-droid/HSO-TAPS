@@ -25,8 +25,12 @@ export function connectDeviceBridge(onEvent) {
     };
   }
 
-  const ws = new WebSocket(import.meta.env.VITE_DEVICE_BRIDGE_WS);
+  const url = import.meta.env.VITE_DEVICE_BRIDGE_WS || "ws://localhost:6060";
+  console.log("[deviceBridge] connecting to:", url);
+  const ws = new WebSocket(url);
+  ws.onopen = () => console.log("[deviceBridge] connected to ws server!");
   ws.onmessage = (msg) => {
+    console.log("[deviceBridge] raw message received:", msg.data);
     try {
       onEvent(JSON.parse(msg.data));
     } catch (err) {
@@ -34,5 +38,6 @@ export function connectDeviceBridge(onEvent) {
     }
   };
   ws.onerror = (err) => console.error("[deviceBridge] socket error", err);
+  ws.onclose = () => console.warn("[deviceBridge] connection closed");
   return { close: () => ws.close() };
 }

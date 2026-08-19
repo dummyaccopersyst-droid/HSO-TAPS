@@ -4,41 +4,56 @@ import "../styles/screens/Result.css";
 function computeBmi(heightCm, weightKg) {
   if (!heightCm || !weightKg) return null;
   const m = heightCm / 100;
-  return +(weightKg / (m * m)).toFixed(1);
+  const val = +(weightKg / (m * m)).toFixed(1);
+  let category = "Normal";
+  if (val < 18.5) category = "Underweight";
+  else if (val >= 25.0 && val < 30.0) category = "Overweight";
+  else if (val >= 30.0) category = "Obese";
+
+  return { value: val, category };
 }
 
 export default function ResultScreen({ readings, overrideTriggered, queueNumber, onDone, isOnline }) {
   const bmi = computeBmi(readings.heightCm, readings.weightKg);
+  const isFever = readings.temperatureC != null && Number(readings.temperatureC) >= 37.5;
+  const hasFeverAlert = isFever || overrideTriggered;
 
   return (
     <div className="kiosk-shell">
       <KioskHeader isOnline={isOnline} />
 
       <div className="kiosk-content">
-        {overrideTriggered ? (
-          <>
-            <div className="result-icon result-icon-alert">!</div>
+        {hasFeverAlert ? (
+          <div className="fever-alert-banner">
+            <div className="result-icon result-icon-alert">🚨</div>
             <h1 className="result-title-alert">Please proceed inside the clinic immediately.</h1>
-            <p className="kiosk-subtitle">An abnormal temperature was detected. A staff member has been notified.</p>
+            <p className="kiosk-subtitle fever-subtitle">
+              ⚠️ <strong>High Temperature / Fever Detected ({readings.temperatureC}°C)</strong>
+              <br />
+              Please immediately proceed inside the clinic for direct attention of the nurse.
+            </p>
             {queueNumber && (
               <div className="checkin-queue-block result-queue-block">
-                <span className="checkin-queue-label">Queue Number</span>
+                <span className="checkin-queue-label">Priority Queue Number</span>
                 <span className="checkin-queue-number">{queueNumber}</span>
               </div>
             )}
-          </>
+          </div>
         ) : (
           <>
             <div className="result-icon result-icon-ok">✓</div>
-            <h1>All done — here's your reading</h1>
+            <h1>All done — here are your results</h1>
           </>
         )}
 
         <div className="reading-summary-grid">
           {readings.temperatureC != null && (
-            <div className="reading-summary-stat">
-              <span className="reading-summary-label">Temperature</span>
+            <div className={`reading-summary-stat ${isFever ? "stat-fever" : ""}`}>
+              <span className="reading-summary-label">Body Temp</span>
               <span className="reading-summary-value">{readings.temperatureC}°C</span>
+              <span className={`reading-badge ${isFever ? "badge-fever" : "badge-normal"}`}>
+                {isFever ? "🔥 Fever Detected" : "✓ Normal"}
+              </span>
             </div>
           )}
           {readings.heightCm != null && (
@@ -55,8 +70,9 @@ export default function ResultScreen({ readings, overrideTriggered, queueNumber,
           )}
           {bmi != null && (
             <div className="reading-summary-stat">
-              <span className="reading-summary-label">BMI</span>
-              <span className="reading-summary-value">{bmi}</span>
+              <span className="reading-summary-label">BMI Reading</span>
+              <span className="reading-summary-value">{bmi.value}</span>
+              <span className="reading-badge badge-bmi">{bmi.category}</span>
             </div>
           )}
         </div>
