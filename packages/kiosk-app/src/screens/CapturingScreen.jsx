@@ -7,10 +7,23 @@ const MODE_COPY = {
   physical: { title: "Measuring height & weight", instruction: "Please stand still on the platform." },
 };
 
-export default function CapturingScreen({ mode, readings, isMock, bridge, onCancel, isOnline }) {
-  const copy = MODE_COPY[mode];
+export default function CapturingScreen({
+  mode,
+  readings,
+  manualFields = [],
+  isMock,
+  bridge,
+  onCancel,
+  onManualEdit,
+  isOnline,
+}) {
+  const copy = MODE_COPY[mode] || MODE_COPY.complete;
   const needsTemp = mode === "complete" || mode === "temperature";
   const needsPhysical = mode === "complete" || mode === "physical";
+
+  const isTempManual = manualFields.includes("temperatureC");
+  const isHeightManual = manualFields.includes("heightCm");
+  const isWeightManual = manualFields.includes("weightKg");
 
   return (
     <div className="kiosk-shell">
@@ -28,19 +41,40 @@ export default function CapturingScreen({ mode, readings, isMock, bridge, onCanc
         <div className="kiosk-card reading-status">
           {needsTemp && (
             <div className={"reading-row" + (readings.temperatureC != null ? " done" : "")}>
-              <span>{readings.temperatureC != null ? "✓" : "⏳"}</span>
-              Temperature: {readings.temperatureC != null ? `${readings.temperatureC}°C` : "waiting..."}
+              <div className="reading-row-main">
+                <span>{readings.temperatureC != null ? "✓" : "⏳"}</span>
+                <span>Temperature: {readings.temperatureC != null ? `${readings.temperatureC}°C` : "scanning..."}</span>
+              </div>
+              {readings.temperatureC != null && (
+                <span className={`reading-type-badge ${isTempManual ? "badge-type-manual" : "badge-type-sensor"}`}>
+                  {isTempManual ? "Manual" : "Sensor"}
+                </span>
+              )}
             </div>
           )}
           {needsPhysical && (
             <>
               <div className={"reading-row" + (readings.heightCm != null ? " done" : "")}>
-                <span>{readings.heightCm != null ? "✓" : "⏳"}</span>
-                Height: {readings.heightCm != null ? `${readings.heightCm} cm` : "waiting..."}
+                <div className="reading-row-main">
+                  <span>{readings.heightCm != null ? "✓" : "⏳"}</span>
+                  <span>Height: {readings.heightCm != null ? `${readings.heightCm} cm` : "scanning..."}</span>
+                </div>
+                {readings.heightCm != null && (
+                  <span className={`reading-type-badge ${isHeightManual ? "badge-type-manual" : "badge-type-sensor"}`}>
+                    {isHeightManual ? "Manual" : "Sensor"}
+                  </span>
+                )}
               </div>
               <div className={"reading-row" + (readings.weightKg != null ? " done" : "")}>
-                <span>{readings.weightKg != null ? "✓" : "⏳"}</span>
-                Weight: {readings.weightKg != null ? `${readings.weightKg} kg` : "waiting..."}
+                <div className="reading-row-main">
+                  <span>{readings.weightKg != null ? "✓" : "⏳"}</span>
+                  <span>Weight: {readings.weightKg != null ? `${readings.weightKg} kg` : "measuring..."}</span>
+                </div>
+                {readings.weightKg != null && (
+                  <span className={`reading-type-badge ${isWeightManual ? "badge-type-manual" : "badge-type-sensor"}`}>
+                    {isWeightManual ? "Manual" : "Sensor"}
+                  </span>
+                )}
               </div>
             </>
           )}
@@ -57,9 +91,16 @@ export default function CapturingScreen({ mode, readings, isMock, bridge, onCanc
           </div>
         )}
 
-        <button className="btn-kiosk btn-kiosk-danger-outline capturing-cancel" onClick={onCancel}>
-          Cancel
-        </button>
+        <div className="capturing-actions-row">
+          {onManualEdit && (
+            <button className="btn-kiosk btn-kiosk-muted capturing-manual-btn" onClick={onManualEdit}>
+              ✏️ Enter / Adjust Manually
+            </button>
+          )}
+          <button className="btn-kiosk btn-kiosk-danger-outline capturing-cancel" onClick={onCancel}>
+            Cancel
+          </button>
+        </div>
       </div>
     </div>
   );

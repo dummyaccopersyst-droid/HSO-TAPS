@@ -8,6 +8,7 @@ import OtherServicesTypeScreen from "./screens/OtherServicesTypeScreen.jsx";
 import RequestTextScreen from "./screens/RequestTextScreen.jsx";
 import CheckedInScreen from "./screens/CheckedInScreen.jsx";
 import ScreeningOptionsScreen from "./screens/ScreeningOptionsScreen.jsx";
+import VitalsEntryScreen from "./screens/VitalsEntryScreen.jsx";
 import CapturingScreen from "./screens/CapturingScreen.jsx";
 import ResultScreen from "./screens/ResultScreen.jsx";
 import OfflineScreen from "./screens/OfflineScreen.jsx";
@@ -31,14 +32,13 @@ export default function App() {
   const [student, setStudent] = useState(null);
   const [captureMode, setCaptureMode] = useState(null); // "complete" | "temperature" | "physical"
   const [readings, setReadings] = useState({});
+  const [manualFields, setManualFields] = useState([]); // Array of keys entered manually
   const [overrideTriggered, setOverrideTriggered] = useState(false);
   const [resultQueueNumber, setResultQueueNumber] = useState(null);
   const [isOnline, setIsOnline] = useState(true);
 
   // Which multi-step flow is currently in progress — determines what
-  // finishCapture() submits and where it routes afterwards. Only relevant
-  // once capture starts; "screening" for Quick Health Screening, or
-  // "consultation" for the mandatory pre-consultation temp check.
+  // finishCapture() submits and where it routes afterwards.
   const [flowType, setFlowType] = useState(null);
   const [consultSubType, setConsultSubType] = useState(null); // "Medical" | "Dental"
   const [otherServiceSubType, setOtherServiceSubType] = useState(null); // "Prescription/OTC" | "General Inquiry"
@@ -48,7 +48,6 @@ export default function App() {
   const idleTimer = useRef(null);
   const stepRef = useRef(step);
   const submittingRef = useRef(false); // guards against double-submit
-  const preOfflineStepRef = useRef("welcome"); // step to restore once back online
   const currentSessionIdRef = useRef(null);
 
   useEffect(() => { stepRef.current = step; }, [step]);
@@ -62,8 +61,6 @@ export default function App() {
         { event: "INSERT", schema: "public", table: "kiosk_sessions" },
         async (payload) => {
           console.log("[Supabase Realtime] Session inserted:", payload.new);
-          // ONLY move to "confirm" screen when a NEW RFID tap occurs (status === 'tap_logged')
-          // Do NOT reset to "confirm" screen when kiosk-app inserts a 'pending_sensor' row!
           if (payload.new?.rfid_uid && payload.new?.status === "tap_logged") {
             if (payload.new?.id) {
               currentSessionIdRef.current = payload.new.id;
@@ -119,12 +116,6 @@ export default function App() {
     };
   }, []);
 
-  // Offline Fallback Protocol (PROJECT-OVERVIEW.pdf): runs independently of
-  // whichever screen is showing. On going offline, remembers the current
-  // step and forces the "offline" screen; on recovery, if the student had
-  // gotten partway through a flow, we deliberately reset to "welcome"
-  // rather than silently resuming mid-transaction with possibly-stale
-  // student/session state.
   useEffect(() => {
     const stop = startHealthMonitor((online) => {
       setIsOnline(online);
@@ -132,13 +123,7 @@ export default function App() {
     return stop;
   }, []);
 
-  // Watches `readings` (the real source of truth, not a ref) and fires the
-  // submit once every required field for the current capture mode has
-  // arrived. Using an effect here — rather than checking completeness
-  // inside the event handler — avoids the stale-ref race that drops a
-  // reading when two sensor events land in the same tick (e.g. height +
-  // weight fired together by one button, or two ESP32 lines sent close
-  // together over serial).
+  // Watches `readings` and fires submit once every required field for the current capture mode is available
   useEffect(() => {
     if (step !== "capturing" || submittingRef.current) return;
     const required = REQUIRED_FIELDS[captureMode] || [];
@@ -159,6 +144,7 @@ export default function App() {
     setStudent(null);
     setCaptureMode(null);
     setReadings({});
+    setManualFields([]);
     setOverrideTriggered(false);
     setResultQueueNumber(null);
     setFlowType(null);
@@ -200,7 +186,7 @@ export default function App() {
       return;
     }
 
-    if (stepRef.current !== "capturing") return; // sensor readings only matter mid-capture
+    if (stepRef.current !== "capturing") return;
 
     const fieldMap = {
       temperature_reading: { temperatureC: evt.celsius },
@@ -210,16 +196,9 @@ export default function App() {
     const patch = fieldMap[evt.type];
     if (!patch) return;
 
-    // Functional update — always merges onto the LATEST state, so two
-    // events fired in the same tick both land correctly.
     setReadings((prev) => ({ ...prev, ...patch }));
   }
 
-  // Called by ManualEntryScreen with the typed-in student ID. Deliberately
-  // does NOT catch errors here — ManualEntryScreen awaits this call itself
-  // so it can show an inline "not found" message without losing what the
-  // student typed (unlike the RFID path, which just re-shows the welcome
-  // screen via an alert).
   async function handleManualSubmit(studentId) {
     const found = await lookupStudent(studentId);
     setStudent(found);
@@ -231,8 +210,6 @@ export default function App() {
   }
 
   function handleConfirmNo() {
-    // Assumption: a mismatch is treated as "start over" rather than retry,
-    // since we don't want to silently keep the wrong student record around.
     resetSession();
   }
 
@@ -245,31 +222,15 @@ export default function App() {
     } else if (label === "Medical Clearance") {
       setStep("otherServicesType");
     } else {
-      // Defensive fallback — shouldn't happen given the current SERVICES list.
       submitIntake({ studentId: student.studentId, serviceType: label, source: "kiosk" }).finally(resetSession);
     }
   }
 
-  async function handleConsultTypeSelect(subType) {
+  function handleConsultTypeSelect(subType) {
     setFlowType("consultation");
     setConsultSubType(subType);
-    setReadings({});
-    setCaptureMode("temperature"); // reuses the existing temp-only capture screen/mode
-    setStep("capturing");
-
-    // Trigger Supabase record for ESP32 hardware to execute temperature scan
-    const { data } = await supabase.from("kiosk_sessions").insert([
-      {
-        rfid_uid: student?.rfidTagUid || student?.studentId,
-        service_selected: "Medical Consultation",
-        sensor_required: "temperature",
-        status: "pending_sensor"
-      }
-    ]).select();
-
-    if (data && data[0]?.id) {
-      currentSessionIdRef.current = data[0].id;
-    }
+    setCaptureMode("temperature");
+    setStep("vitalsEntry");
   }
 
   function handleOtherServiceTypeSelect(subType) {
@@ -291,19 +252,16 @@ export default function App() {
     setStep("checkedIn");
   }
 
-  async function handleScreeningOptionSelect(mode) {
+  function handleScreeningOptionSelect(mode) {
     setCaptureMode(mode);
-    setReadings({});
-    setStep("capturing");
+    setStep("vitalsEntry");
+  }
 
-    // Map screening option to exact sensor_required command for ESP32
-    const sensorCmd = mode === "complete" ? "complete" : mode === "temperature" ? "temperature" : "physical";
-
-    // Trigger Supabase row for ESP32 to poll and run hardware sensors
+  async function triggerHardwareSensors(sensorCmd) {
     const { data } = await supabase.from("kiosk_sessions").insert([
       {
         rfid_uid: student?.rfidTagUid || student?.studentId,
-        service_selected: "Quick Health Screening",
+        service_selected: flowType === "consultation" ? "Medical Consultation" : "Quick Health Screening",
         sensor_required: sensorCmd,
         status: "pending_sensor"
       }
@@ -312,6 +270,49 @@ export default function App() {
     if (data && data[0]?.id) {
       currentSessionIdRef.current = data[0].id;
     }
+  }
+
+  async function handleVitalsProceed(enteredReadings) {
+    const mode = captureMode || "complete";
+    const required = REQUIRED_FIELDS[mode] || [];
+    const enteredKeys = Object.keys(enteredReadings);
+
+    // Merge manual values with state
+    setReadings(enteredReadings);
+    setManualFields(enteredKeys);
+
+    const missing = required.filter((field) => enteredReadings[field] == null);
+
+    // Case 1: All required values were entered manually!
+    if (missing.length === 0) {
+      finishCapture(enteredReadings);
+      return;
+    }
+
+    // Case 2: Partial or empty (Hybrid / Auto-scan required for missing fields)
+    let sensorCmd = "complete";
+    const needsTemp = missing.includes("temperatureC");
+    const needsPhysical = missing.includes("heightCm") || missing.includes("weightKg");
+
+    if (needsTemp && !needsPhysical) {
+      sensorCmd = "temperature";
+    } else if (!needsTemp && needsPhysical) {
+      sensorCmd = "physical";
+    } else {
+      sensorCmd = "complete";
+    }
+
+    await triggerHardwareSensors(sensorCmd);
+    setStep("capturing");
+  }
+
+  async function handleFullAutoScan() {
+    const mode = captureMode || "complete";
+    setReadings({});
+    setManualFields([]);
+    const sensorCmd = mode === "complete" ? "complete" : mode === "temperature" ? "temperature" : "physical";
+    await triggerHardwareSensors(sensorCmd);
+    setStep("capturing");
   }
 
   async function finishCapture(finalReadings) {
@@ -350,7 +351,6 @@ export default function App() {
       setStep("result");
     } catch (err) {
       console.warn("[finishCapture] API intake submission fallback:", err);
-      // Fallback display if local backend intake API is temporarily unneeded / offline
       setStep("result");
     }
   }
@@ -393,19 +393,42 @@ export default function App() {
         <ScreeningOptionsScreen onSelect={handleScreeningOptionSelect} onBack={() => setStep("service")} isOnline={isOnline} />
       )}
 
+      {step === "vitalsEntry" && (
+        <VitalsEntryScreen
+          mode={captureMode}
+          initialReadings={readings}
+          onProceed={handleVitalsProceed}
+          onAutoScan={handleFullAutoScan}
+          onBack={() => setStep(flowType === "consultation" ? "consultationType" : "screeningOptions")}
+          isOnline={isOnline}
+        />
+      )}
+
       {step === "capturing" && (
         <CapturingScreen
           mode={captureMode}
           readings={readings}
+          manualFields={manualFields}
           isMock={isMock}
           bridge={bridgeRef.current}
+          onManualEdit={() => setStep("vitalsEntry")}
           onCancel={resetSession}
           isOnline={isOnline}
         />
       )}
 
       {step === "result" && (
-        <ResultScreen readings={readings} overrideTriggered={overrideTriggered} queueNumber={resultQueueNumber} onDone={resetSession} isOnline={isOnline} />
+        <ResultScreen
+          readings={readings}
+          overrideTriggered={overrideTriggered}
+          queueNumber={resultQueueNumber}
+          onAdjust={() => {
+            submittingRef.current = false;
+            setStep("vitalsEntry");
+          }}
+          onDone={resetSession}
+          isOnline={isOnline}
+        />
       )}
     </div>
   );

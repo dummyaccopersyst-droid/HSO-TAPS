@@ -62,7 +62,7 @@ function computeBmi(heightInput, weightInput) {
   };
 }
 
-export default function ResultScreen({ readings, overrideTriggered, queueNumber, onDone, isOnline }) {
+export default function ResultScreen({ readings, overrideTriggered, queueNumber, onAdjust, onDone, isOnline }) {
   const heightInfo = formatHeight(readings?.heightCm ?? readings?.height);
   const rawWeight = readings?.weightKg ?? readings?.weight;
   const weightFormatted = rawWeight != null && !isNaN(Number(rawWeight)) 
@@ -191,9 +191,16 @@ export default function ResultScreen({ readings, overrideTriggered, queueNumber,
           </div>
         )}
 
-        <button className="btn-kiosk btn-kiosk-primary result-done-btn" onClick={onDone}>
-          Done
-        </button>
+        <div className="result-actions-row">
+          {onAdjust && (
+            <button className="btn-kiosk btn-kiosk-muted result-adjust-btn" onClick={onAdjust}>
+              ✏️ Adjust / Correct Readings
+            </button>
+          )}
+          <button className="btn-kiosk btn-kiosk-primary result-done-btn" onClick={onDone}>
+            Done
+          </button>
+        </div>
       </div>
     </div>
   );

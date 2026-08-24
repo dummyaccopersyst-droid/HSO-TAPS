@@ -33,17 +33,50 @@
   margin: 8px 0 26px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
 .reading-row {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 10px;
   font-size: 0.95rem;
   color: var(--text-secondary);
+  padding: 4px 0;
 }
-.reading-row.done { color: var(--success); font-weight: 700; }
+
+.reading-row-main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.reading-row.done {
+  color: var(--success);
+  font-weight: 700;
+}
+
+.reading-type-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.badge-type-manual {
+  background: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+}
+
+.badge-type-sensor {
+  background: #e0f2fe;
+  color: #0369a1;
+  border: 1px solid #bae6fd;
+}
 
 .mock-controls {
   border: 1px dashed var(--border);
@@ -73,6 +106,22 @@
   cursor: pointer;
 }
 
+.capturing-actions-row {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 480px;
+}
+
+.capturing-manual-btn {
+  flex: 1;
+  font-size: 0.95rem;
+  padding: 14px 20px;
+}
+
 .capturing-cancel {
-  max-width: 200px;
+  flex: 1;
+  max-width: 180px;
 }

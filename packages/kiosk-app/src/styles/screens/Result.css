@@ -242,7 +242,22 @@
   border: 1px solid #f1f5f9;
 }
 
-.result-done-btn {
-  max-width: 640px;
+.result-actions-row {
+  display: flex;
+  gap: 14px;
   width: 100%;
+  max-width: 640px;
+  justify-content: center;
+  align-items: center;
+}
+
+.result-adjust-btn {
+  flex: 1;
+  padding: 18px 24px;
+  font-size: 1rem;
+}
+
+.result-done-btn {
+  flex: 1.5;
+  width: auto;
 }

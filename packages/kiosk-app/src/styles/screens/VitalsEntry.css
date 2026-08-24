@@ -1,0 +1,288 @@
+.vitals-entry-container {
+  width: 100%;
+  max-width: 860px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.vitals-entry-card {
+  width: 100%;
+  background: #ffffff;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  box-shadow: 0 10px 30px rgba(10, 42, 99, 0.08);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.vitals-entry-header {
+  background: var(--nu-blue-dark);
+  color: #ffffff;
+  padding: 18px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.vitals-entry-header h2 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.vitals-entry-header-badge {
+  background: rgba(246, 199, 68, 0.2);
+  color: var(--nu-gold);
+  border: 1px solid var(--nu-gold);
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+.vitals-entry-body {
+  padding: 24px 28px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+}
+
+@media (max-width: 768px) {
+  .vitals-entry-body {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 20px;
+  }
+}
+
+/* Left side: Inputs list */
+.vitals-fields-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.vitals-field-item {
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  background: #f8fafc;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+}
+
+.vitals-field-item:hover {
+  border-color: #cbd5e1;
+  background: #ffffff;
+}
+
+.vitals-field-item.active {
+  border-color: var(--nu-blue);
+  background: #f0f5ff;
+  box-shadow: 0 0 0 3px rgba(15, 63, 150, 0.12);
+}
+
+.vitals-field-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.vitals-field-title {
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.vitals-field-status {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.status-auto {
+  background: #e0f2fe;
+  color: #0369a1;
+  border: 1px solid #bae6fd;
+}
+
+.status-manual {
+  background: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+}
+
+.vitals-field-value-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  min-height: 38px;
+}
+
+.vitals-field-val {
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: var(--nu-blue-dark);
+}
+
+.vitals-field-placeholder {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  font-style: italic;
+}
+
+.vitals-field-unit {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-left: 4px;
+}
+
+.vitals-field-conversion {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+/* Right side: Keypad */
+.vitals-keypad-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.vitals-keypad-hint {
+  font-size: 0.84rem;
+  color: var(--text-secondary);
+  background: #f1f5f9;
+  padding: 8px 12px;
+  border-radius: 8px;
+  text-align: center;
+  margin: 0;
+}
+
+.vitals-keypad-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.vkey {
+  background: #f8fafc;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  padding: 16px 0;
+  cursor: pointer;
+  transition: all 0.1s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vkey:active {
+  transform: scale(0.95);
+  background: #e2e8f0;
+}
+
+.vkey-action {
+  font-size: 0.9rem;
+}
+
+.vkey-danger {
+  background: #fef2f2;
+  color: var(--danger);
+  border-color: #fecaca;
+}
+
+.vkey-clear {
+  background: #fffbeb;
+  color: #b45309;
+  border-color: #fde68a;
+}
+
+/* Actions footer */
+.vitals-entry-actions-footer {
+  padding: 18px 28px 24px;
+  background: #fafbfc;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.btn-vitals-back {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  padding: 14px 20px;
+  font-size: 0.95rem;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-weight: 600;
+}
+.btn-vitals-back:hover {
+  background: #f1f5f9;
+}
+
+.vitals-actions-right {
+  display: flex;
+  gap: 10px;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.btn-vitals-auto {
+  background: #e0f2fe;
+  color: #0369a1;
+  border: 1.5px solid #bae6fd;
+  padding: 14px 22px;
+  border-radius: var(--radius);
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.btn-vitals-auto:hover {
+  background: #bae6fd;
+}
+
+.btn-vitals-proceed {
+  background: var(--nu-blue);
+  color: #ffffff;
+  border: none;
+  padding: 14px 28px;
+  border-radius: var(--radius);
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+  white-space: nowrap;
+}
+
+.btn-vitals-proceed:hover {
+  opacity: 0.92;
+}
