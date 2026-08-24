@@ -12,7 +12,12 @@ import analyticsRoutes from "./routes/analytics.routes.js";
 export function createApp() {
   const app = express();
 
-  app.use(cors({ origin: (process.env.CORS_ORIGIN || "").split(",") }));
+  const rawOrigin = process.env.CORS_ORIGIN;
+  const allowedOrigins = !rawOrigin || rawOrigin === "*" 
+    ? "*" 
+    : rawOrigin.split(",").map((s) => s.trim()).filter(Boolean);
+
+  app.use(cors({ origin: allowedOrigins }));
   app.use(express.json({ limit: "5mb" }));
   app.use(morgan("dev"));
 

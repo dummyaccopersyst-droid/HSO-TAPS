@@ -12,8 +12,13 @@ async function main() {
   const app = createApp();
   const httpServer = http.createServer(app);
 
+  const rawOrigin = process.env.CORS_ORIGIN;
+  const allowedOrigins = !rawOrigin || rawOrigin === "*" 
+    ? "*" 
+    : rawOrigin.split(",").map((s) => s.trim()).filter(Boolean);
+
   const io = new SocketIOServer(httpServer, {
-    cors: { origin: (process.env.CORS_ORIGIN || "").split(",") },
+    cors: { origin: allowedOrigins },
   });
   app.set("io", io);
   initQueueSocket(io);
