@@ -35,34 +35,43 @@
 
 .offline-short-subtitle {
   color: var(--text-secondary, #5b6b85);
-  font-size: 1.1rem;
-  margin: 0 0 32px;
-  max-width: 520px;
-  line-height: 1.5;
+  font-size: 1.15rem;
+  margin: 0 0 34px;
+  max-width: 820px;
+  width: 100%;
+  white-space: nowrap;
+  line-height: 1.4;
 }
 
-/* Clean, Simple Card */
+@media (max-width: 768px) {
+  .offline-short-subtitle {
+    white-space: normal;
+    max-width: 580px;
+  }
+}
+
+/* Clean, Simple Card with increased width */
 .offline-simple-card {
   background: #ffffff;
-  border: 1px solid var(--border, #dfe3ea);
+  border: 1.5px solid var(--border, #dfe3ea);
   border-radius: var(--radius-lg, 16px);
-  padding: 26px 32px;
+  padding: 28px 36px;
   width: 100%;
-  max-width: 540px;
+  max-width: 660px;
   text-align: center;
   box-shadow: 0 4px 20px rgba(10, 42, 99, 0.05);
 }
 
 .offline-simple-card h3 {
   color: var(--nu-blue, #0f3f96);
-  font-size: 1.15rem;
+  font-size: 1.2rem;
   font-weight: 800;
   margin: 0 0 10px;
 }
 
 .offline-simple-card p {
   color: #475569;
-  font-size: 0.95rem;
+  font-size: 0.98rem;
   line-height: 1.6;
   margin: 0;
 }

@@ -191,13 +191,11 @@ async function runKioskTest() {
     console.log("\n--- SCENARIO 2: Instant Offline State Lock Protocol ---");
     console.log("11. Triggering Instant Offline Fallback Protocol State...");
     
-    // Inject and lock offline screen state
+    // Trigger offline state
     await driver.executeScript(() => {
       window.dispatchEvent(new Event("offline"));
-      // Also prevent immediate recovery poll during snapshot
-      window.__OFFLINE_TEST__ = true;
     });
-    await driver.sleep(400);
+    await driver.sleep(600);
     await saveScreenshot(driver, "10_instant_offline_state_lock");
 
     console.log("\n==================================================");
