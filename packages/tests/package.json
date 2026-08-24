@@ -1,0 +1,14 @@
+{
+  "name": "@hso-tap/tests",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node test-kiosk.js",
+    "test:kiosk": "node test-kiosk.js",
+    "test:admin": "node test-admin.js"
+  },
+  "dependencies": {
+    "selenium-webdriver": "^4.20.0"
+  }
+}
