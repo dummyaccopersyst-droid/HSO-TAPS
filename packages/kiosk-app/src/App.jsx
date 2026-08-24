@@ -119,6 +119,11 @@ export default function App() {
   useEffect(() => {
     const stop = startHealthMonitor((online) => {
       setIsOnline(online);
+      if (!online) {
+        setStep("offline");
+      } else {
+        setStep((curr) => (curr === "offline" ? "welcome" : curr));
+      }
     });
     return stop;
   }, []);
@@ -357,7 +362,7 @@ export default function App() {
 
   return (
     <div onClick={isOnline ? resetIdleTimer : undefined}>
-      {step === "offline" && <OfflineScreen />}
+      {step === "offline" && <OfflineScreen onRetry={() => resetSession()} />}
 
       {step === "welcome" && <WelcomeScreen onManualEntry={() => setStep("manual")} />}
 

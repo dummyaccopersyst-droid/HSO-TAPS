@@ -5,45 +5,95 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 40px;
+  padding: 40px 24px;
   background: var(--nu-blue-light, #e8edf8);
 }
 
 .offline-icon {
-  width: 84px;
-  height: 84px;
+  width: 88px;
+  height: 88px;
   border-radius: 50%;
   background: #ffffff;
-  color: var(--nu-blue, #0f3f96);
-  font-size: 2.2rem;
+  color: var(--danger, #c0392b);
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 24px;
-  box-shadow: 0 4px 18px rgba(15, 63, 150, 0.12);
-  border: 2px solid #d0dcf5;
+  margin-bottom: 20px;
+  box-shadow: 0 8px 24px rgba(192, 57, 43, 0.12);
+  border: 2px solid #fecaca;
+}
+
+.offline-badge {
+  background: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #fca5a5;
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 4px 12px;
+  border-radius: 999px;
+  margin-bottom: 12px;
 }
 
 .offline-screen h1 {
   color: var(--nu-blue-dark, #0a2a63);
-  max-width: 600px;
-  font-size: 1.8rem;
-  font-weight: 700;
-  margin: 0 0 12px;
+  max-width: 650px;
+  font-size: 1.85rem;
+  font-weight: 800;
+  margin: 0 0 10px;
 }
 
-.offline-screen p {
+.offline-desc {
   color: var(--text-secondary, #5b6b85);
   font-size: 1.05rem;
-  max-width: 480px;
-  margin: 0;
+  max-width: 540px;
+  margin: 0 0 24px;
   line-height: 1.5;
+}
+
+.offline-steps-card {
+  background: #ffffff;
+  border: 1px solid var(--border, #dfe3ea);
+  border-radius: 14px;
+  padding: 20px 24px;
+  width: 100%;
+  max-width: 520px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-align: left;
+  box-shadow: 0 4px 18px rgba(10, 42, 99, 0.05);
+}
+
+.offline-step-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 0.95rem;
+  color: var(--text-primary, #1c2b4a);
+  font-weight: 600;
+}
+
+.offline-step-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--nu-blue, #0f3f96);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 .offline-hint {
   color: var(--text-muted, #8b96a8) !important;
-  font-size: 0.9rem !important;
-  margin-top: 20px !important;
+  font-size: 0.86rem !important;
+  margin-top: 18px !important;
+  max-width: 480px;
 }
 
 .btn-offline-retry {
