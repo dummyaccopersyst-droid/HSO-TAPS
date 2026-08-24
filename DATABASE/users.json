@@ -1,0 +1,12 @@
+[
+  {
+    "_id": "6a7e2b1d5a2e2c61f53742d4",
+    "email": "admin@nufv.edu.ph",
+    "__v": 0,
+    "createdAt": "2026-08-13T20:37:49.235Z",
+    "name": "NU Fairview Admin",
+    "passwordHash": "$2a$10$uQ7WoqttmEiUa1NCIaleCukDumGuDccD2nWpH44scfhwgF1Br5nBy",
+    "role": "admin",
+    "updatedAt": "2026-08-18T10:33:36.882Z"
+  }
+]

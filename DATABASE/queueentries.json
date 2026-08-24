@@ -1,0 +1,38 @@
+[
+  {
+    "_id": "6a84210622c407afb48459d3",
+    "student": "6a83497842cef780ce52b958",
+    "queueNumber": "D0003",
+    "priorityLevel": "Standard Priority",
+    "serviceType": "Dental Consultation",
+    "status": "waiting",
+    "linkedVitals": "6a84210622c407afb48459d0",
+    "createdAt": "2026-08-18T09:08:22.335Z",
+    "updatedAt": "2026-08-18T09:08:22.335Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a854d0b00326bf6a750591a",
+    "student": "6a7e2e745a2e2c61f53742d5",
+    "queueNumber": "M0001",
+    "priorityLevel": "Standard Priority",
+    "serviceType": "Medical Consultation",
+    "status": "waiting",
+    "linkedVitals": "6a854d0b00326bf6a7505917",
+    "createdAt": "2026-08-19T06:28:27.168Z",
+    "updatedAt": "2026-08-19T06:28:27.168Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a85620d00326bf6a7505929",
+    "student": "6a7e2e745a2e2c61f53742d5",
+    "queueNumber": "M0002",
+    "priorityLevel": "Standard Priority",
+    "serviceType": "Medical Consultation",
+    "status": "waiting",
+    "linkedVitals": "6a85620c00326bf6a7505926",
+    "createdAt": "2026-08-19T07:58:05.006Z",
+    "updatedAt": "2026-08-19T07:58:05.006Z",
+    "__v": 0
+  }
+]

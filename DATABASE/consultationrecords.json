@@ -1,0 +1,22 @@
+[
+  {
+    "_id": "6a7fbfb97be9cafa2d863cbf",
+    "student": "6a7e2e745a2e2c61f53742d5",
+    "queueEntry": "6a7e30b24e5094d99cf5a3d4",
+    "attendingStaff": "6a7e2b1d5a2e2c61f53742d4",
+    "visitType": "Walk-in Medical Consultation",
+    "subjective": "",
+    "objective": "",
+    "assessment": "",
+    "plan": "",
+    "safetyChecklist": {
+      "verifiedIdentityAndAllergies": false,
+      "confirmedNoAdverseReactions": false,
+      "instructedDosageAndHygiene": false
+    },
+    "visitDate": "2026-08-15T01:24:09.017Z",
+    "createdAt": "2026-08-15T01:24:09.028Z",
+    "updatedAt": "2026-08-15T01:24:09.028Z",
+    "__v": 0
+  }
+]
