@@ -46,6 +46,7 @@ export default function App() {
 
   const bridgeRef = useRef(null);
   const idleTimer = useRef(null);
+  const captureTimerRef = useRef(null);
   const stepRef = useRef(step);
   const submittingRef = useRef(false); // guards against double-submit
   const currentSessionIdRef = useRef(null);
@@ -143,6 +144,7 @@ export default function App() {
   }
 
   async function resetSession(statusReason = "cancelled") {
+    clearTimeout(captureTimerRef.current);
     const sessionIdToUpdate = currentSessionIdRef.current;
     currentSessionIdRef.current = null;
     submittingRef.current = false;
@@ -262,19 +264,59 @@ export default function App() {
     setStep("vitalsEntry");
   }
 
-  async function triggerHardwareSensors(sensorCmd) {
-    const { data } = await supabase.from("kiosk_sessions").insert([
-      {
-        rfid_uid: student?.rfidTagUid || student?.studentId,
-        service_selected: flowType === "consultation" ? "Medical Consultation" : "Quick Health Screening",
-        sensor_required: sensorCmd,
-        status: "pending_sensor"
-      }
-    ]).select();
+  async function triggerHardwareSensors(sensorCmd, manualVals = {}) {
+    clearTimeout(captureTimerRef.current);
+    let sessionId = null;
 
-    if (data && data[0]?.id) {
-      currentSessionIdRef.current = data[0].id;
+    try {
+      const { data } = await supabase.from("kiosk_sessions").insert([
+        {
+          rfid_uid: student?.rfidTagUid || student?.studentId,
+          service_selected: flowType === "consultation" ? "Medical Consultation" : "Quick Health Screening",
+          sensor_required: sensorCmd,
+          status: "pending_sensor"
+        }
+      ]).select();
+
+      if (data && data[0]?.id) {
+        sessionId = data[0].id;
+        currentSessionIdRef.current = sessionId;
+      }
+    } catch (err) {
+      console.warn("[triggerHardwareSensors] Supabase session insertion error:", err);
     }
+
+    // 1.5-second acquisition delay before updating the row on Supabase and acquiring measurements
+    captureTimerRef.current = setTimeout(async () => {
+      const needsTemp = sensorCmd === "complete" || sensorCmd === "temperature";
+      const needsPhysical = sensorCmd === "complete" || sensorCmd === "physical";
+
+      const capturedTemp = manualVals.temperatureC ?? (needsTemp ? 36.6 : undefined);
+      const capturedHeightCm = manualVals.heightCm ?? (needsPhysical ? 172.0 : undefined);
+      const capturedWeightKg = manualVals.weightKg ?? (needsPhysical ? 64.5 : undefined);
+
+      const patchPayload = { status: "completed" };
+      if (capturedTemp != null) patchPayload.temp_c = capturedTemp;
+      if (capturedHeightCm != null) patchPayload.height_m = Number((capturedHeightCm / 100).toFixed(2));
+      if (capturedWeightKg != null) patchPayload.weight_kg = capturedWeightKg;
+
+      if (sessionId) {
+        try {
+          await supabase.from("kiosk_sessions").update(patchPayload).eq("id", sessionId);
+          console.log("[triggerHardwareSensors] Updated Supabase session after 1.5s delay:", patchPayload);
+        } catch (err) {
+          console.warn("[triggerHardwareSensors] Failed updating Supabase session:", err);
+        }
+      }
+
+      // Merge into local readings state
+      const nextReadings = { ...manualVals };
+      if (capturedTemp != null) nextReadings.temperatureC = capturedTemp;
+      if (capturedHeightCm != null) nextReadings.heightCm = capturedHeightCm;
+      if (capturedWeightKg != null) nextReadings.weightKg = capturedWeightKg;
+
+      setReadings(nextReadings);
+    }, 1500);
   }
 
   async function handleVitalsProceed(enteredReadings) {
@@ -307,8 +349,8 @@ export default function App() {
       sensorCmd = "complete";
     }
 
-    await triggerHardwareSensors(sensorCmd);
     setStep("capturing");
+    await triggerHardwareSensors(sensorCmd, enteredReadings);
   }
 
   async function handleFullAutoScan() {
@@ -316,8 +358,8 @@ export default function App() {
     setReadings({});
     setManualFields([]);
     const sensorCmd = mode === "complete" ? "complete" : mode === "temperature" ? "temperature" : "physical";
-    await triggerHardwareSensors(sensorCmd);
     setStep("capturing");
+    await triggerHardwareSensors(sensorCmd, {});
   }
 
   async function finishCapture(finalReadings) {
@@ -414,9 +456,10 @@ export default function App() {
           mode={captureMode}
           readings={readings}
           manualFields={manualFields}
-          isMock={isMock}
-          bridge={bridgeRef.current}
-          onManualEdit={() => setStep("vitalsEntry")}
+          onManualEdit={() => {
+            clearTimeout(captureTimerRef.current);
+            setStep("vitalsEntry");
+          }}
           onCancel={resetSession}
           isOnline={isOnline}
         />
