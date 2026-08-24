@@ -1,6 +1,10 @@
 import axios from "axios";
 
-export const api = axios.create({ baseURL: import.meta.env.VITE_API_URL });
+let rawUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+if (rawUrl.endsWith("/")) rawUrl = rawUrl.slice(0, -1);
+if (!rawUrl.endsWith("/api")) rawUrl = `${rawUrl}/api`;
+
+export const api = axios.create({ baseURL: rawUrl });
 
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("hsotap_token");
