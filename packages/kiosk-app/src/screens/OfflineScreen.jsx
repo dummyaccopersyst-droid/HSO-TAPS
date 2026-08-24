@@ -1,63 +1,116 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import KioskHeader from "../components/KioskHeader.jsx";
 import "../offline.css";
 
 export default function OfflineScreen({ onRetry }) {
-  // Automatic refresh / retry every 8 seconds if connection is restored
+  const [retrying, setRetrying] = useState(false);
+  const [countdown, setCountdown] = useState(10);
+
+  // Countdown timer for automatic retry loop
   useEffect(() => {
     const timer = setInterval(() => {
-      if (navigator.onLine) {
-        if (onRetry) onRetry();
-        else window.location.reload();
-      }
-    }, 8000);
+      setCountdown((c) => {
+        if (c <= 1) {
+          if (navigator.onLine) {
+            handleRetry();
+          }
+          return 10;
+        }
+        return c - 1;
+      });
+    }, 1000);
     return () => clearInterval(timer);
   }, [onRetry]);
 
-  const handleRetry = () => {
-    if (onRetry) onRetry();
-    else window.location.reload();
+  const handleRetry = async () => {
+    setRetrying(true);
+    if (onRetry) {
+      onRetry();
+    } else {
+      window.location.reload();
+    }
+    setTimeout(() => setRetrying(false), 2000);
   };
 
   return (
-    <div className="offline-screen">
-      <div className="offline-icon">
-        <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-          <line x1="1" y1="1" x2="23" y2="23" />
-          <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55" />
-          <path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39" />
-          <path d="M10.71 5.05A16 16 0 0 1 22.58 9" />
-          <path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88" />
-          <path d="M8.53 16.11a6 6 0 0 1 6.95 0" />
-          <line x1="12" y1="20" x2="12.01" y2="20" />
-        </svg>
-      </div>
+    <div className="kiosk-shell offline-shell">
+      <KioskHeader isOnline={false} />
 
-      <span className="offline-badge">Offline Fallback Protocol</span>
-      <h1>Automated Service Temporarily Unavailable</h1>
-      <p className="offline-desc">
-        The kiosk has lost its network or database connection. Please proceed to the clinic reception for manual check-in.
-      </p>
+      <div className="kiosk-content offline-content">
+        <div className="offline-card-wrapper">
+          {/* Top Status Header */}
+          <div className="offline-header-banner">
+            <div className="offline-banner-left">
+              <div className="offline-status-pulse-ring">
+                <div className="offline-status-pulse-core" />
+              </div>
+              <div>
+                <span className="offline-tag">System Notice • Offline Fallback Protocol</span>
+                <h2>Automated Check-in is Temporarily Unavailable</h2>
+              </div>
+            </div>
+            <div className="offline-terminal-tag">TERMINAL 01</div>
+          </div>
 
-      <div className="offline-steps-card">
-        <div className="offline-step-item">
-          <span className="offline-step-num">1</span>
-          <span>Please proceed inside the Health Services Office (Clinic).</span>
+          {/* Body Section */}
+          <div className="offline-card-body">
+            <p className="offline-lead-text">
+              The self-service kiosk has lost connection to the clinic network. <strong>All clinic services remain fully operational</strong> through our manual front desk reception.
+            </p>
+
+            {/* Structured Reception Guidance Cards */}
+            <div className="offline-guidance-grid">
+              <div className="guidance-card">
+                <div className="guidance-card-header">
+                  <div className="guidance-num-badge">1</div>
+                  <h4>Proceed to the Front Desk</h4>
+                </div>
+                <p>
+                  Please step inside the <strong>Health Services Office (Clinic)</strong> and approach the reception counter.
+                </p>
+                <div className="guidance-tip">
+                  <span>📍</span>
+                  <span>Located directly through the main clinic entrance</span>
+                </div>
+              </div>
+
+              <div className="guidance-card">
+                <div className="guidance-card-header">
+                  <div className="guidance-num-badge">2</div>
+                  <h4>Manual Intake & Priority Queue</h4>
+                </div>
+                <p>
+                  Our clinic nurse will record your Student ID, check your temperature and vitals manually, and issue your queue ticket.
+                </p>
+                <div className="guidance-tip">
+                  <span>🩺</span>
+                  <span>Medical & Dental staff on duty</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Reconnect Action & Heartbeat Diagnostics */}
+            <div className="offline-footer-panel">
+              <div className="offline-diagnostics">
+                <div className="diagnostics-indicator">
+                  <span className="diagnostics-radar" />
+                  <span>Network Heartbeat: Auto-retrying in <strong>{countdown}s</strong></span>
+                </div>
+                <span className="diagnostics-subtext">Automatic resume will trigger immediately upon signal recovery</span>
+              </div>
+
+              <button
+                type="button"
+                className={`btn-offline-action ${retrying ? "loading" : ""}`}
+                onClick={handleRetry}
+                disabled={retrying}
+              >
+                {retrying ? "Checking Network..." : "🔄 Test Connection Now"}
+              </button>
+            </div>
+          </div>
         </div>
-        <div className="offline-step-item">
-          <span className="offline-step-num">2</span>
-          <span>Approach the nurse or reception desk for manual consultation or screening assistance.</span>
-        </div>
       </div>
-
-      <div style={{ marginTop: "24px" }}>
-        <button className="btn-offline-retry" onClick={handleRetry}>
-          🔄 Check Connection & Retry
-        </button>
-      </div>
-
-      <p className="offline-hint">
-        The kiosk will automatically resume service as soon as the network connection is restored.
-      </p>
     </div>
   );
 }

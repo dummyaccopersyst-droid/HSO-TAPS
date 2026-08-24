@@ -79,7 +79,7 @@ async function runKioskTest() {
     console.log("3. Entering Student ID '2024-100123' via Keypad...");
     const studentDigits = ["2", "0", "2", "4", "1", "0", "0", "1", "2", "3"];
     for (const digit of studentDigits) {
-      await driver.sleep(120);
+      await driver.sleep(100);
       const keyBtn = await driver.wait(
         until.elementLocated(By.xpath(`//button[contains(@class, 'keypad-key') and text()='${digit}']`)),
         3000
@@ -133,7 +133,7 @@ async function runKioskTest() {
     console.log("8. Typing manual Height (172 cm)...");
     const heightDigits = ["1", "7", "2"];
     for (const d of heightDigits) {
-      await driver.sleep(100);
+      await driver.sleep(80);
       const vkey = await driver.wait(
         until.elementLocated(By.xpath(`//button[contains(@class, 'vkey') and text()='${d}']`)),
         3000
@@ -145,11 +145,11 @@ async function runKioskTest() {
     console.log("   Selecting Weight field and typing (64.5 kg)...");
     const weightField = await driver.findElement(By.xpath("//*[contains(text(), 'Weight')]/ancestor::div[contains(@class, 'vitals-field-item')]"));
     await weightField.click();
-    await driver.sleep(300);
+    await driver.sleep(250);
 
     const weightDigits = ["6", "4", ".", "5"];
     for (const d of weightDigits) {
-      await driver.sleep(100);
+      await driver.sleep(80);
       const vkey = await driver.wait(
         until.elementLocated(By.xpath(`//button[contains(@class, 'vkey') and text()='${d}']`)),
         3000
@@ -161,11 +161,11 @@ async function runKioskTest() {
     console.log("   Selecting Body Temperature field and typing (36.6 °C)...");
     const tempField = await driver.findElement(By.xpath("//*[contains(text(), 'Body Temperature')]/ancestor::div[contains(@class, 'vitals-field-item')]"));
     await tempField.click();
-    await driver.sleep(300);
+    await driver.sleep(250);
 
     const tempDigits = ["3", "6", ".", "6"];
     for (const d of tempDigits) {
-      await driver.sleep(100);
+      await driver.sleep(80);
       const vkey = await driver.wait(
         until.elementLocated(By.xpath(`//button[contains(@class, 'vkey') and text()='${d}']`)),
         3000
@@ -179,7 +179,7 @@ async function runKioskTest() {
     console.log("9. Submitting manual vitals...");
     const proceedBtn = await driver.findElement(By.xpath("//button[contains(@class, 'btn-vitals-proceed')]"));
     await proceedBtn.click();
-    await driver.sleep(1500);
+    await driver.sleep(1200);
 
     // 10. Result Screen (with BMI and Vitals Analysis)
     console.log("10. Capturing Result Screen with BMI & Vitals Analysis...");
@@ -191,18 +191,14 @@ async function runKioskTest() {
     console.log("\n--- SCENARIO 2: Instant Offline State Lock Protocol ---");
     console.log("11. Triggering Instant Offline Fallback Protocol State...");
     
-    // Trigger offline event
+    // Inject and lock offline screen state
     await driver.executeScript(() => {
       window.dispatchEvent(new Event("offline"));
+      // Also prevent immediate recovery poll during snapshot
+      window.__OFFLINE_TEST__ = true;
     });
-    await driver.sleep(1200);
+    await driver.sleep(400);
     await saveScreenshot(driver, "10_instant_offline_state_lock");
-
-    // Restore online
-    await driver.executeScript(() => {
-      window.dispatchEvent(new Event("online"));
-    });
-    await driver.sleep(1000);
 
     console.log("\n==================================================");
     console.log("🎉 ALL KIOSK PROCESS & OFFLINE PROTOCOL TESTS PASSED!");
