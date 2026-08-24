@@ -9,5 +9,5 @@ build/
 coverage/
 
 EXPORTS/
-tests/
+/tests/
 packages/tests/screenshots/
