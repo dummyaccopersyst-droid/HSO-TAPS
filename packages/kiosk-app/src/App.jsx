@@ -36,6 +36,7 @@ export default function App() {
   const [overrideTriggered, setOverrideTriggered] = useState(false);
   const [resultQueueNumber, setResultQueueNumber] = useState(null);
   const [isOnline, setIsOnline] = useState(true);
+  const [sensorFailed, setSensorFailed] = useState(false);
 
   // Which multi-step flow is currently in progress — determines what
   // finishCapture() submits and where it routes afterwards.
@@ -106,6 +107,8 @@ export default function App() {
           if (weight_kg != null) patch.weightKg = weight_kg;
 
           if (Object.keys(patch).length > 0) {
+            clearTimeout(captureTimerRef.current);
+            setSensorFailed(false);
             setReadings((prev) => ({ ...prev, ...patch }));
           }
         }
@@ -145,6 +148,7 @@ export default function App() {
 
   async function resetSession(statusReason = "cancelled") {
     clearTimeout(captureTimerRef.current);
+    setSensorFailed(false);
     const sessionIdToUpdate = currentSessionIdRef.current;
     currentSessionIdRef.current = null;
     submittingRef.current = false;
@@ -264,8 +268,9 @@ export default function App() {
     setStep("vitalsEntry");
   }
 
-  async function triggerHardwareSensors(sensorCmd, manualVals = {}) {
+  async function triggerHardwareSensors(sensorCmd) {
     clearTimeout(captureTimerRef.current);
+    setSensorFailed(false);
     let sessionId = null;
 
     try {
@@ -286,37 +291,11 @@ export default function App() {
       console.warn("[triggerHardwareSensors] Supabase session insertion error:", err);
     }
 
-    // 1.5-second acquisition delay before updating the row on Supabase and acquiring measurements
-    captureTimerRef.current = setTimeout(async () => {
-      const needsTemp = sensorCmd === "complete" || sensorCmd === "temperature";
-      const needsPhysical = sensorCmd === "complete" || sensorCmd === "physical";
-
-      const capturedTemp = manualVals.temperatureC ?? (needsTemp ? 36.6 : undefined);
-      const capturedHeightCm = manualVals.heightCm ?? (needsPhysical ? 172.0 : undefined);
-      const capturedWeightKg = manualVals.weightKg ?? (needsPhysical ? 64.5 : undefined);
-
-      const patchPayload = { status: "completed" };
-      if (capturedTemp != null) patchPayload.temp_c = capturedTemp;
-      if (capturedHeightCm != null) patchPayload.height_m = Number((capturedHeightCm / 100).toFixed(2));
-      if (capturedWeightKg != null) patchPayload.weight_kg = capturedWeightKg;
-
-      if (sessionId) {
-        try {
-          await supabase.from("kiosk_sessions").update(patchPayload).eq("id", sessionId);
-          console.log("[triggerHardwareSensors] Updated Supabase session after 1.5s delay:", patchPayload);
-        } catch (err) {
-          console.warn("[triggerHardwareSensors] Failed updating Supabase session:", err);
-        }
-      }
-
-      // Merge into local readings state
-      const nextReadings = { ...manualVals };
-      if (capturedTemp != null) nextReadings.temperatureC = capturedTemp;
-      if (capturedHeightCm != null) nextReadings.heightCm = capturedHeightCm;
-      if (capturedWeightKg != null) nextReadings.weightKg = capturedWeightKg;
-
-      setReadings(nextReadings);
-    }, 1500);
+    // Production Hardware Timeout: If physical sensors do not report data within 6s, show failed window
+    captureTimerRef.current = setTimeout(() => {
+      console.warn("[triggerHardwareSensors] No sensor data received from hardware within timeout.");
+      setSensorFailed(true);
+    }, 6000);
   }
 
   async function handleVitalsProceed(enteredReadings) {
@@ -350,7 +329,7 @@ export default function App() {
     }
 
     setStep("capturing");
-    await triggerHardwareSensors(sensorCmd, enteredReadings);
+    await triggerHardwareSensors(sensorCmd);
   }
 
   async function handleFullAutoScan() {
@@ -359,7 +338,7 @@ export default function App() {
     setManualFields([]);
     const sensorCmd = mode === "complete" ? "complete" : mode === "temperature" ? "temperature" : "physical";
     setStep("capturing");
-    await triggerHardwareSensors(sensorCmd, {});
+    await triggerHardwareSensors(sensorCmd);
   }
 
   async function finishCapture(finalReadings) {
@@ -456,10 +435,13 @@ export default function App() {
           mode={captureMode}
           readings={readings}
           manualFields={manualFields}
+          sensorFailed={sensorFailed}
           onManualEdit={() => {
             clearTimeout(captureTimerRef.current);
+            setSensorFailed(false);
             setStep("vitalsEntry");
           }}
+          onHome={resetSession}
           onCancel={resetSession}
           isOnline={isOnline}
         />

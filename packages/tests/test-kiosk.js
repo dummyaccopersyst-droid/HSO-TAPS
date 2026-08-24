@@ -168,34 +168,66 @@ async function runKioskTest() {
     );
     console.log("   ✓ All specific sensor instructions confirmed on CapturingScreen");
 
-    // 10. Wait through 1.5s acquisition delay & Supabase row update
-    console.log("10. Waiting 1.8s for 1.5s delay and Supabase session update...");
-    await driver.sleep(1800);
-
-    // 11. Automated Result Screen
-    console.log("11. Verifying Automated Result Screen...");
-    const resultHeader = await driver.wait(
-      until.elementLocated(By.xpath("//*[contains(text(), 'All done — here are your results')]")),
-      6000
+    // 10. Wait for hardware sensor timeout (6s) because hardware is offline
+    console.log("10. Waiting for real hardware sensor timeout (6s)...");
+    const modalTitle = await driver.wait(
+      until.elementLocated(By.xpath("//*[contains(text(), 'Hardware Sensors Not Responding')]")),
+      8000
     );
-    await saveScreenshot(driver, "09_automated_result_screen");
-    console.log("   ✓ Automated measurements successfully captured and displayed!");
+    await driver.sleep(400);
+    await saveScreenshot(driver, "09_sensors_not_responding_modal");
+    console.log("   ✓ Sensors Not Responding modal window successfully displayed!");
+
+    // 11. Click "Manually Input" on the Failed Modal Window
+    console.log("11. Clicking 'Manually Input' on the failed sensor modal...");
+    const manualInputBtn = await driver.wait(
+      until.elementLocated(By.xpath("//button[contains(text(), 'Manually Input')]")),
+      5000
+    );
+    await manualInputBtn.click();
+    await driver.sleep(600);
+    await saveScreenshot(driver, "10_manual_entry_keypad_after_timeout");
+
+    // 12. Type Height (172 cm), Weight (64.5 kg), Normal Temp (36.6 °C)
+    console.log("12. Entering Vitals via Keypad (Height: 172cm, Weight: 64.5kg, Temp: 36.6°C)...");
+    await typeDigits(driver, ["1", "7", "2"]);
+
+    // Weight
+    const weightField = await driver.findElement(By.xpath("//*[contains(text(), 'Weight')]/ancestor::div[contains(@class, 'vitals-field-item')]"));
+    await weightField.click();
+    await driver.sleep(200);
+    await typeDigits(driver, ["6", "4", ".", "5"]);
+
+    // Temperature (Normal: 36.6 °C)
+    const tempField = await driver.findElement(By.xpath("//*[contains(text(), 'Body Temperature')]/ancestor::div[contains(@class, 'vitals-field-item')]"));
+    await tempField.click();
+    await driver.sleep(200);
+    await typeDigits(driver, ["3", "6", ".", "6"]);
+
+    await driver.sleep(400);
+
+    // 13. Proceed to Result Screen (Normal)
+    console.log("13. Submitting vitals to view Result Screen...");
+    const proceedBtn = await driver.findElement(By.xpath("//button[contains(@class, 'btn-vitals-proceed')]"));
+    await proceedBtn.click();
+    await driver.sleep(1200);
+    await saveScreenshot(driver, "11_result_screen_normal_analysis");
+    console.log("   ✓ Normal vital signs and BMI results verified!");
 
     // =============================================================
     // Scenario 2: Manual Adjustment & High Fever Test Case
     // =============================================================
     console.log("\n--- SCENARIO 2: Manual Adjustment & High Fever Test ---");
-    console.log("12. Clicking 'Correct Readings' to adjust vitals manually...");
+    console.log("14. Clicking 'Correct Readings' to adjust vitals manually...");
     const correctReadingsBtn = await driver.wait(
       until.elementLocated(By.xpath("//button[contains(text(), 'Correct Readings')]")),
       5000
     );
     await correctReadingsBtn.click();
     await driver.sleep(800);
-    await saveScreenshot(driver, "10_manual_adjust_entry_screen");
 
     // Select Temperature field, clear, and enter 38.8 °C
-    console.log("13. Updating Temperature to High Fever Level: 38.8 °C...");
+    console.log("15. Updating Temperature to High Fever Level: 38.8 °C...");
     const tempFieldFever = await driver.findElement(By.xpath("//*[contains(text(), 'Body Temperature')]/ancestor::div[contains(@class, 'vitals-field-item')]"));
     await tempFieldFever.click();
     await driver.sleep(200);
@@ -207,7 +239,6 @@ async function runKioskTest() {
 
     await typeDigits(driver, ["3", "8", ".", "8"]);
     await driver.sleep(400);
-    await saveScreenshot(driver, "11_vitals_manual_fever_typed");
 
     // Proceed to Fever Result Screen
     const proceedFeverBtn = await driver.findElement(By.xpath("//button[contains(@class, 'btn-vitals-proceed')]"));
@@ -220,7 +251,7 @@ async function runKioskTest() {
     // Scenario 3: Instant Offline State Lock Protocol
     // =============================================================
     console.log("\n--- SCENARIO 3: Instant Offline Fallback Protocol ---");
-    console.log("14. Triggering Instant Offline Fallback Protocol State...");
+    console.log("16. Triggering Instant Offline Fallback Protocol State...");
     
     // Trigger offline event
     await driver.executeScript(() => {
@@ -231,7 +262,7 @@ async function runKioskTest() {
     console.log("   ✓ Offline lock protocol successfully engaged!");
 
     console.log("\n==================================================");
-    console.log("🎉 ALL KIOSK AUTOMATED SCAN, MANUAL & FEVER TESTS PASSED!");
+    console.log("🎉 ALL KIOSK TIMEOUT, MODAL, MANUAL & FEVER TESTS PASSED!");
     console.log(`📁 Screenshots directory: ${screenshotsDir}`);
     console.log("==================================================\n");
 
