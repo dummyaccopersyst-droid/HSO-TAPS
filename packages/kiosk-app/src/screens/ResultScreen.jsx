@@ -100,12 +100,6 @@ export default function ResultScreen({ readings, overrideTriggered, queueNumber,
             <p className="kiosk-subtitle fever-subtitle">
               High body temperature detected ({tempFormatted ?? readings?.temperatureC}°C). Please proceed inside the clinic for direct attention of the nurse.
             </p>
-            {queueNumber && (
-              <div className="priority-queue-card">
-                <span className="priority-queue-tag">Priority Queue Number</span>
-                <span className="priority-queue-num">{queueNumber}</span>
-              </div>
-            )}
           </>
         ) : (
           <>
