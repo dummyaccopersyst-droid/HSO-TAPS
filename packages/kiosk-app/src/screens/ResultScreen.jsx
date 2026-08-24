@@ -194,7 +194,7 @@ export default function ResultScreen({ readings, overrideTriggered, queueNumber,
         <div className="result-actions-row">
           {onAdjust && (
             <button className="btn-kiosk btn-kiosk-muted result-adjust-btn" onClick={onAdjust}>
-              ✏️ Adjust / Correct Readings
+              Correct Readings
             </button>
           )}
           <button className="btn-kiosk btn-kiosk-primary result-done-btn" onClick={onDone}>

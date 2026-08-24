@@ -1,3 +1,5 @@
+/* packages/kiosk-app/src/styles/screens/VitalsEntry.css */
+
 .vitals-entry-container {
   width: 100%;
   max-width: 860px;
@@ -10,18 +12,18 @@
 .vitals-entry-card {
   width: 100%;
   background: #ffffff;
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border);
-  box-shadow: 0 10px 30px rgba(10, 42, 99, 0.08);
+  border-radius: var(--radius-lg, 16px);
+  border: 1px solid var(--border, #dfe3ea);
+  box-shadow: 0 10px 30px rgba(10, 42, 99, 0.06);
   overflow: hidden;
   display: flex;
   flex-direction: column;
 }
 
 .vitals-entry-header {
-  background: var(--nu-blue-dark);
+  background: var(--nu-blue, #0f3f96);
   color: #ffffff;
-  padding: 18px 24px;
+  padding: 20px 28px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -29,26 +31,13 @@
 
 .vitals-entry-header h2 {
   margin: 0;
-  font-size: 1.15rem;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.vitals-entry-header-badge {
-  background: rgba(246, 199, 68, 0.2);
-  color: var(--nu-gold);
-  border: 1px solid var(--nu-gold);
-  font-size: 0.76rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  padding: 4px 10px;
-  border-radius: 999px;
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
 }
 
 .vitals-entry-body {
-  padding: 24px 28px;
+  padding: 26px 30px;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 28px;
@@ -69,9 +58,17 @@
   gap: 14px;
 }
 
+.vitals-instruction-hint {
+  margin: 0 0 4px;
+  font-size: 0.9rem;
+  color: var(--text-secondary, #5b6b85);
+  text-align: left;
+  line-height: 1.45;
+}
+
 .vitals-field-item {
-  border: 2px solid var(--border);
-  border-radius: var(--radius);
+  border: 1.5px solid var(--border, #dfe3ea);
+  border-radius: var(--radius, 12px);
   padding: 14px 18px;
   background: #f8fafc;
   cursor: pointer;
@@ -88,7 +85,7 @@
 }
 
 .vitals-field-item.active {
-  border-color: var(--nu-blue);
+  border-color: var(--nu-blue, #0f3f96);
   background: #f0f5ff;
   box-shadow: 0 0 0 3px rgba(15, 63, 150, 0.12);
 }
@@ -101,15 +98,21 @@
 
 .vitals-field-title {
   font-weight: 700;
-  font-size: 0.92rem;
-  color: var(--text-primary);
+  font-size: 0.95rem;
+  color: var(--text-primary, #1c2b4a);
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
+}
+
+.vitals-field-icon {
+  color: var(--nu-blue, #0f3f96);
+  display: flex;
+  align-items: center;
 }
 
 .vitals-field-status {
-  font-size: 0.72rem;
+  font-size: 0.74rem;
   font-weight: 700;
   padding: 3px 8px;
   border-radius: 6px;
@@ -118,9 +121,9 @@
 }
 
 .status-auto {
-  background: #e0f2fe;
-  color: #0369a1;
-  border: 1px solid #bae6fd;
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
 }
 
 .status-manual {
@@ -139,25 +142,25 @@
 .vitals-field-val {
   font-size: 1.45rem;
   font-weight: 800;
-  color: var(--nu-blue-dark);
+  color: var(--nu-blue-dark, #0a2a63);
 }
 
 .vitals-field-placeholder {
-  color: var(--text-muted);
+  color: var(--text-muted, #8b96a8);
   font-size: 0.95rem;
-  font-style: italic;
+  font-style: normal;
 }
 
 .vitals-field-unit {
   font-size: 0.88rem;
   font-weight: 600;
-  color: var(--text-secondary);
+  color: var(--text-secondary, #5b6b85);
   margin-left: 4px;
 }
 
 .vitals-field-conversion {
-  font-size: 0.82rem;
-  color: var(--text-secondary);
+  font-size: 0.84rem;
+  color: var(--text-secondary, #5b6b85);
   font-weight: 600;
 }
 
@@ -169,13 +172,17 @@
 }
 
 .vitals-keypad-hint {
-  font-size: 0.84rem;
-  color: var(--text-secondary);
+  font-size: 0.88rem;
+  color: var(--text-secondary, #5b6b85);
   background: #f1f5f9;
   padding: 8px 12px;
   border-radius: 8px;
   text-align: center;
   margin: 0;
+}
+
+.vitals-keypad-hint strong {
+  color: var(--nu-blue-dark, #0a2a63);
 }
 
 .vitals-keypad-grid {
@@ -186,11 +193,11 @@
 
 .vkey {
   background: #f8fafc;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border: 1px solid var(--border, #dfe3ea);
+  border-radius: var(--radius, 12px);
   font-size: 1.3rem;
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--text-primary, #1c2b4a);
   padding: 16px 0;
   cursor: pointer;
   transition: all 0.1s ease;
@@ -205,26 +212,38 @@
 }
 
 .vkey-action {
-  font-size: 0.9rem;
+  font-size: 0.88rem;
+  letter-spacing: 0.05em;
 }
 
-.vkey-danger {
-  background: #fef2f2;
-  color: var(--danger);
-  border-color: #fecaca;
+.vkey-back {
+  background: #f8fafc;
+  color: #64748b;
+  border-color: var(--border, #dfe3ea);
+}
+
+.vkey-back:hover {
+  background: #fee2e2;
+  color: #dc2626;
+  border-color: #fca5a5;
 }
 
 .vkey-clear {
-  background: #fffbeb;
-  color: #b45309;
-  border-color: #fde68a;
+  background: #f8fafc;
+  color: #64748b;
+  border-color: var(--border, #dfe3ea);
+}
+
+.vkey-clear:hover {
+  background: #e2e8f0;
+  color: #1e293b;
 }
 
 /* Actions footer */
 .vitals-entry-actions-footer {
-  padding: 18px 28px 24px;
+  padding: 18px 28px 22px;
   background: #fafbfc;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--border, #dfe3ea);
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
@@ -234,14 +253,15 @@
 
 .btn-vitals-back {
   background: transparent;
-  border: 1px solid var(--border);
-  color: var(--text-secondary);
-  padding: 14px 20px;
+  border: 1px solid var(--border, #dfe3ea);
+  color: var(--text-secondary, #5b6b85);
+  padding: 14px 22px;
   font-size: 0.95rem;
-  border-radius: var(--radius);
+  border-radius: var(--radius, 12px);
   cursor: pointer;
-  font-weight: 600;
+  font-weight: 700;
 }
+
 .btn-vitals-back:hover {
   background: #f1f5f9;
 }
@@ -254,11 +274,11 @@
 }
 
 .btn-vitals-auto {
-  background: #e0f2fe;
-  color: #0369a1;
-  border: 1.5px solid #bae6fd;
+  background: #eef4ff;
+  color: var(--nu-blue, #0f3f96);
+  border: 1.5px solid #c7d9fa;
   padding: 14px 22px;
-  border-radius: var(--radius);
+  border-radius: var(--radius, 12px);
   font-size: 0.95rem;
   font-weight: 700;
   cursor: pointer;
@@ -267,15 +287,15 @@
 }
 
 .btn-vitals-auto:hover {
-  background: #bae6fd;
+  background: #dbe7fc;
 }
 
 .btn-vitals-proceed {
-  background: var(--nu-blue);
+  background: var(--nu-blue, #0f3f96);
   color: #ffffff;
   border: none;
   padding: 14px 28px;
-  border-radius: var(--radius);
+  border-radius: var(--radius, 12px);
   font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
